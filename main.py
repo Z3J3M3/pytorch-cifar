@@ -49,13 +49,13 @@ testset = torchvision.datasets.CIFAR100(
 testloader = torch.utils.data.DataLoader(
     testset, batch_size=100, shuffle=False, num_workers=2)
 
-classes = ('plane', 'car', 'bird', 'cat', 'deer',
-           'dog', 'frog', 'horse', 'ship', 'truck')
+#classes = ('plane', 'car', 'bird', 'cat', 'deer',
+#           'dog', 'frog', 'horse', 'ship', 'truck')
 
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-  net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
