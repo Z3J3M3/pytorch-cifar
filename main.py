@@ -13,7 +13,7 @@ import argparse
 
 from models import *
 from utils import progress_bar
-from models import __all__ as model_dict
+from models import model_mapping
 
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
@@ -58,14 +58,18 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print('==> Building model..')
 
-if args.model not in model_dict:
-    raise ValueError(f"无效的模型名！可选模型：{list(model_dict.keys())}")
-net = model_dict[args.model](num_classes=args.num_classes)  # 动态创建指定模型
-# =====================================================================
+# 仅保留正确的模型加载逻辑（删除旧的 model_dict 冗余代码）
+# 1. 校验模型名是否合法（用 model_mapping 字典）
+if args.model not in model_mapping:
+    raise ValueError(f"无效的模型名！可选模型：{list(model_mapping.keys())}")
+
+# 2. 动态创建模型（用 model_mapping 字典）
+net = model_mapping[args.model](num_classes=args.num_classes)
 
 # 模型保存路径优化（新增：自动区分实验名称）
 save_path = os.path.join('checkpoint', f'{args.model}_cifar100.pth')
 os.makedirs('checkpoint', exist_ok=True)
+
 
 net = net.to(device)
 if device == 'cuda':
