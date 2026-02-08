@@ -6,10 +6,19 @@ from .mobilenetv2 import MobileNetV2  # 原仓库自带
 from .shufflenetv2 import ShuffleNetV2  # 原仓库自带
 
 # 模型名→模型函数的映射，供main.py调用
-__all__ = {
-    'resnet18': ResNet18,
+__all__ = [
+    'ResNet18',
+    'resnet18_half',
+    'se_resnet18',
+    'MobileNetV2',
+    'ShuffleNetV2'
+]
+
+# 单独定义模型映射字典（供 main.py 按名称调用）
+model_mapping = {
+    'resnet18': ResNet18,          # 外部传参用小写，内部映射到大写函数
     'resnet18_half': resnet18_half,
     'se_resnet18': se_resnet18,
-    'mobilenetv2': MobileNetV2,
-    'shufflenetv2': ShuffleNetV2
+    'mobilenetv2': MobileNetV2,    # 外部传参小写，内部映射到大写
+    'shufflenetv2': ShuffleNetV2   # 外部传参小写，内部映射到大写
 }
