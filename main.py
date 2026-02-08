@@ -13,12 +13,15 @@ import argparse
 
 from models import *
 from utils import progress_bar
+from models import __all__ as model_dict
 
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
+parser.add_argument('--model', type=str, default='resnet18', help='模型名称，可选：resnet18/resnet18_half/se_resnet18/mobilenetv2/shufflenetv2')
+parser.add_argument('--num_classes', type=int, default=100, help='类别数（CIFAR100为100）')
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -54,21 +57,16 @@ testloader = torch.utils.data.DataLoader(
 
 # Model
 print('==> Building model..')
-# net = VGG('VGG19')
-net = ResNet18()
-# net = PreActResNet18()
-# net = GoogLeNet()
-# net = DenseNet121()
-# net = ResNeXt29_2x64d()
-# net = MobileNet()
-# net = MobileNetV2()
-# net = DPN92()
-# net = ShuffleNetG2()
-# net = SENet18()
-# net = ShuffleNetV2(1)
-# net = EfficientNetB0()
-# net = RegNetX_200MF()
-# net = SimpleDLA()
+
+if args.model not in model_dict:
+    raise ValueError(f"无效的模型名！可选模型：{list(model_dict.keys())}")
+net = model_dict[args.model](num_classes=args.num_classes)  # 动态创建指定模型
+# =====================================================================
+
+# 模型保存路径优化（新增：自动区分实验名称）
+save_path = os.path.join('checkpoint', f'{args.model}_cifar100.pth')
+os.makedirs('checkpoint', exist_ok=True)
+
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -78,7 +76,7 @@ if args.resume:
     # Load checkpoint.
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
-    checkpoint = torch.load('./checkpoint/ckpt.pth')
+    checkpoint = torch.load(save_path)
     net.load_state_dict(checkpoint['net'])
     best_acc = checkpoint['acc']
     start_epoch = checkpoint['epoch']
@@ -142,11 +140,9 @@ def test(epoch):
             'acc': acc,
             'epoch': epoch,
         }
-        if not os.path.isdir('checkpoint'):
-            os.mkdir('checkpoint')
-        torch.save(state, './checkpoint/ckpt.pth')
+        torch.save(state, save_path)
         best_acc = acc
-
+      
 
 for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
