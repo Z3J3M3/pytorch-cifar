@@ -96,8 +96,10 @@ def main():
 
     # 加载教师模型权重（需先训练基线模型并保存）
     if os.path.exists(args.teacher_ckpt):
-        teacher_model.load_state_dict(torch.load(args.teacher_ckpt))
-        print(f"成功加载教师模型：{args.teacher_ckpt}")
+        checkpoint = torch.load(args.teacher_ckpt)
+        # 提取模型state_dict（兼容main.py的保存格式）
+        teacher_model.load_state_dict(checkpoint['net'])
+        print(f"成功加载教师模型：{args.teacher_ckpt}，最佳准确率：{checkpoint['acc']}%")
     else:
         raise FileNotFoundError(f"教师模型权重不存在！请先训练基线resnet18并保存到{args.teacher_ckpt}")
     
