@@ -28,6 +28,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
+DATASET_PATH = os.environ.get('CIFAR100_PATH', './data')  # 优先读环境变量，无则用默认./data
 # Data
 print('==> Preparing data..')
 transform_train = transforms.Compose([
@@ -43,14 +44,14 @@ transform_test = transforms.Compose([
 ])
 
 trainset = torchvision.datasets.CIFAR100(
-    root='./data', train=True, download=True, transform=transform_train)
+    root=DATASET_PATH, train=True, download=False, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=128, shuffle=True, num_workers=2)
+    trainset, batch_size=128, shuffle=True, num_workers=0)
 
 testset = torchvision.datasets.CIFAR100(
-    root='./data', train=False, download=True, transform=transform_test)
+    root=DATASET_PATH, train=False, download=False, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
-    testset, batch_size=100, shuffle=False, num_workers=2)
+    testset, batch_size=100, shuffle=False, num_workers=0)
 
 #classes = ('plane', 'car', 'bird', 'cat', 'deer',
 #           'dog', 'frog', 'horse', 'ship', 'truck')
