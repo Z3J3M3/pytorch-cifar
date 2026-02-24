@@ -20,5 +20,5 @@ model_mapping = {
     'resnet18_half': resnet18_half,
     'se_resnet18': se_resnet18,
     'mobilenetv2': MobileNetV2,    # 外部传参小写，内部映射到大写
-    'shufflenetv2': ShuffleNetV2   # 外部传参小写，内部映射到大写
+    'shufflenetv2': lambda num_classes=100: ShuffleNetV2(net_size=1.0, num_classes=num_classes)   # 外部传参小写，内部映射到大写
 }
