@@ -133,6 +133,14 @@ def train(epoch):
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
+    # 🚨 新增：输出规整的Train数据（核心！用于日志提取）
+    # ==============================================
+    train_avg_loss = train_loss / len(trainloader)  # 计算该epoch平均训练损失
+    train_avg_acc = 100. * correct / total          # 计算该epoch平均训练准确率
+    # 输出固定格式的行，无控制字符，方便正则匹配
+    print(f"[Epoch {epoch}] Train - Loss: {train_avg_loss:.4f} | Acc: {train_avg_acc:.2f}%")
+
+
 
 def test(epoch):
     global best_acc
@@ -154,6 +162,14 @@ def test(epoch):
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                          % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
+    # 🚨 新增：输出规整的Test数据（核心！用于日志提取）
+    # ==============================================
+    test_avg_loss = test_loss / len(testloader)    # 计算该epoch平均测试损失
+    test_avg_acc = 100. * correct / total          # 计算该epoch平均测试准确率
+    # 输出固定格式的行，无控制字符，方便正则匹配
+    print(f"[Epoch {epoch}] Test - Loss: {test_avg_loss:.4f} | Acc: {test_avg_acc:.2f}%")
+    
+
     # Save checkpoint.
     acc = 100.*correct/total
     if acc > best_acc:
@@ -167,7 +183,7 @@ def test(epoch):
         best_acc = acc
       
 
-for epoch in range(start_epoch, start_epoch+200):
+for epoch in range(start_epoch, start_epoch+10):
     train(epoch)
     test(epoch)
     scheduler.step()
