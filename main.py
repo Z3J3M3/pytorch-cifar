@@ -15,6 +15,24 @@ from models import *
 from utils import progress_bar
 from models import model_mapping
 
+# 🚨 新增：添加日志重定向代码（核心修改）
+import sys
+class Logger(object):
+    def __init__(self, filename='log.txt'):
+        self.terminal = sys.stdout
+        self.log = open(filename, 'a', encoding='utf-8')
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+    def flush(self):
+        # 强制刷新，确保日志实时写入
+        self.terminal.flush()
+        self.log.flush()
+
+# 🚨 新增：启动日志重定向（所有print都会同时写入log.txt）
+sys.stdout = Logger('log.txt')
+
+
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -153,3 +171,10 @@ for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
     test(epoch)
     scheduler.step()
+
+
+
+# 🚨 新增：训练结束后关闭日志文件（可选，防止文件句柄泄漏）
+sys.stdout.log.close()
+# 恢复标准输出（可选）
+sys.stdout = sys.stdout.terminal
